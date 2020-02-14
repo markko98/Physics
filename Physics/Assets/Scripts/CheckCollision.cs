@@ -7,7 +7,7 @@ public class CheckCollision : MonoBehaviour
 {
      public GameObject[] collidedObjects;
      public GameObject[] waters;
-    [HideInInspector] public bool wasInWater = false;
+     public bool wasInWater = false;
     private void Awake()
     {
         collidedObjects = GameObject.FindGameObjectsWithTag("Obstacle");

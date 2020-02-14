@@ -8,6 +8,7 @@ public class MeshGenerator : MonoBehaviour
 {
     public float width = 1f;
     public float height = 1f;
+    public float mass = 1f;
     private MeshFilter meshfilter;
     private MeshRenderer meshRenderer;
     public Material mat;

@@ -6,17 +6,15 @@ public class PlayerController : CheckCollision
 {
     public enum TypeOfFluid { Water, Propane, Mercury}
     private const float gravity = 9.81f;
-    private float mass;
-    Position position, position0;
-    //float x, x0, y0, y;
+    public float mass;
     float speed = 50f;
     float trenjePoda = 0.2f;
+    public Position position, position0;
     public Velocity velocity0, velocity;
-    bool canMoveRight = true, canMoveLeft = true;
+    bool canMoveRight = true, canMoveLeft = true, canMoveUp = true, canMoveDown = true;
     bool isGrounded = false, isJump = false;
-    private MeshGenerator player;
     public Action onFire;
-    private MeshGenerator water;
+    private GameObject player;
 
     // FORCES
     Vector2 Fg;
@@ -32,41 +30,16 @@ public class PlayerController : CheckCollision
 
     private void Start()
     {
-
-        player = GetComponent<MeshGenerator>();
-        water = GameObject.FindGameObjectWithTag("Water").GetComponent<MeshGenerator>();
-        mass = GetComponent<MeshGenerator>().mass;
-        position0 = new Position(transform.position.x, transform.position.y);
+        player = this.gameObject;
+        position0 = new Position(transform.position.x, transform.position.y, transform.position.z);
         position = position0;
-        velocity0 = new Velocity(0, 0);
+        velocity0 = new Velocity(0, 0, 0);
         velocity = velocity0;
-        // converting from liters to m3
-        liquidDisplaced = (player.width*player.height) / 1000;
-
-        if(typeOfFluid == TypeOfFluid.Water)
-        {
-            density = 1000f;
-        }
-        if (typeOfFluid == TypeOfFluid.Propane)
-        {
-            density = 493f;
-        }
-        if (typeOfFluid == TypeOfFluid.Mercury)
-        {
-            density = 13590f;
-        }
-
-        Fg.y = mass * gravity;
-        Fb.y = density * gravity * liquidDisplaced;
-
-        Debug.Log("Fg: " + Fg.y);
-        Debug.Log("Fb: " + Fb.y);
     }
 
 
     private void Update()
     {
-        
         // MOVING ON X
         if (Input.GetKey(KeyCode.A) && canMoveLeft)
         {
@@ -75,6 +48,14 @@ public class PlayerController : CheckCollision
         if (Input.GetKey(KeyCode.D) && canMoveRight)
         {
             velocity.Vx += speed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.W) && canMoveUp)
+        {
+            velocity.Vz += speed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.S) && canMoveDown)
+        {
+            velocity.Vz -= speed * Time.deltaTime;
         }
 
         // MAX VELOCITY
@@ -86,17 +67,21 @@ public class PlayerController : CheckCollision
         {
             velocity.Vx = -10;
         }
+        if (velocity.Vz > 10)
+        {
+            velocity.Vz = 10;
+        }
+        if (velocity.Vz < -10)
+        {
+            velocity.Vz = -10;
+        }
 
 
         position.X = position0.X + velocity0.Vx * Time.deltaTime;
-
-        transform.position = new Vector2(position0.X, position0.Y);
-
-
-        
+        position.Z = position0.Z + velocity0.Vz * Time.deltaTime;
+        transform.position = new Vector3(position0.X, position0.Y, position0.Z);
 
 
-        // CHECKING COLLISION WITH THE FLOOR
         if (CheckForCollisionYDown(player))
         {
             velocity.Vy = 0;
@@ -109,34 +94,43 @@ public class PlayerController : CheckCollision
             position.Y = position0.Y + velocity0.Vy * Time.deltaTime - (gravity / 2) * (Mathf.Pow(Time.deltaTime, 2));
         }
 
-        // CHECKING COLLISION WITH CEILING
-        if (CheckForCollisionYUp(player))
-        {
-            position.Y = position0.Y - 0.1f;
-            velocity.Vy = velocity.Vy * (-0.25f);
-        }
-
-
-        //CHECKING SIDE COLLISIONS
         if (CheckForCollisionXLeft(player))
         {
-            position.X = position0.X + 0.1f;
-            velocity.Vx = velocity.Vx * (-0.2f);
+            velocity.Vx = 0;
             canMoveLeft = false;
-            canMoveRight = true;
+        }
+        else
+        {
+            canMoveLeft = true;
         }
         if (CheckForCollisionXRight(player))
         {
-            position.X = position0.X - 0.1f;
-            velocity.Vx = velocity.Vx * (-0.2f);
+            velocity.Vx = 0;
             canMoveRight = false;
-            canMoveLeft = true;
         }
-        if (!CheckForCollisionXRight(player) && !CheckForCollisionXLeft(player))
+        else
         {
             canMoveRight = true;
-            canMoveLeft = true;
         }
+        if (CheckForCollisionZTop(player))
+        {
+            velocity.Vz = 0;
+            canMoveUp = false;
+        }
+        else
+        {
+            canMoveUp = true;
+        }
+        if (CheckForCollisionZDown(player))
+        {
+            velocity.Vz = 0;
+            canMoveDown = false;
+        }
+        else
+        {
+            canMoveDown = true;
+        }
+
 
         // JUMPING
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
@@ -168,59 +162,25 @@ public class PlayerController : CheckCollision
             {
                 velocity.Vx = 0;
             }
-        }
-
-        // FIRING BULLETS
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (onFire != null)
+            if (velocity.Vz > 0.2)
             {
-                onFire();
+                velocity.Vz -= trenjePoda;
+            }
+            if (velocity.Vz < -0.2)
+            {
+                velocity.Vz += trenjePoda;
+            }
+            if (velocity.Vz >= -0.2 && velocity.Vz <= 0.2)
+            {
+                velocity.Vz = 0;
             }
         }
-
-
-
-        // BUOYANCY
-        if (CheckCollisionWithWaterDown(player))
-        {
-            //if (Fg > Fb)
-            //{
-            //    velocity.Vy -= Fg - Fb;
-            //}
-            //if (Fb > Fg)
-            //{
-            //    velocity.Vy += Fb - Fg;
-            //}
-            //if(Fg == Fb)
-            //{
-            //    velocity.Vy = 0;
-            //}
-            velocity.Vy += buoyancyModifier;
-            
-            // velocity.Vy += buoyancyModifier;
-            //velocity.Vy = velocity.Vy * -1 * density/1000;
-            //velocity.Vx = velocity.Vx * -1 * density / 1000;
-
-        }
-
-        if (CheckCollisionWithWaterUp(player) && wasInWater)
-        {
-            velocity.Vy = velocity.Vy * 0.6f;
-            if (velocity.Vy < 0.5f)
-            {
-                velocity.Vy = 0;
-            }
-            wasInWater = false;
-        }
-
-
 
 
 
         // SAVING VALUES
         position0 = position;
         velocity0 = velocity;
-                     
+
     }
 }

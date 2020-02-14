@@ -6,15 +6,22 @@ public class Bullet : CheckCollision
 {
     private const float gravity = 9.81f;
     private MeshGenerator bulletMesh;
+    private float mass;
     PlayerController playerController;
-    float bx, by, bx0, by0;
+    Position bulletPosition, bulletPosition0;
+   //float bx, by, bx0, by0;
     Velocity bulletVelocity0, bulletVelocity;
+
+    [Range(0,180)]
+    public float projectileShootAngle;
+
     float bulletShootAngle;
     bool isGrounded = false;
 
     private void Awake()
     {
         bulletMesh = GetComponent<MeshGenerator>();
+        mass = GetComponent<MeshGenerator>().mass;
         collidedObjects = GameObject.FindGameObjectsWithTag("Obstacle");
         waters = GameObject.FindGameObjectsWithTag("Water");
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
@@ -22,10 +29,8 @@ public class Bullet : CheckCollision
 
     private void Start()
     {
-        bx0 = transform.position.x;
-        by0 = transform.position.y;
-        bx = bx0;
-        by = by0;
+        bulletPosition0 = new Position(transform.position.x, transform.position.y);
+        bulletPosition = bulletPosition0;
         bulletVelocity0 = new Velocity(0, 0);
         bulletVelocity = bulletVelocity0;
 
@@ -34,7 +39,7 @@ public class Bullet : CheckCollision
         bulletVelocity0.Vy = 15f + playerController.velocity.Vy;
 
         // ANGLE ON WHICH THE BULLET IS SHOOTED
-        bulletShootAngle = 45f;
+        bulletShootAngle = projectileShootAngle * Mathf.PI/180;
 
         bulletVelocity.Vx = bulletVelocity0.Vx * Mathf.Cos(bulletShootAngle);
         bulletVelocity.Vy = bulletVelocity0.Vy * Mathf.Sin(bulletShootAngle);
@@ -43,15 +48,8 @@ public class Bullet : CheckCollision
     private void Update()
     {
 
-        if (CheckCollisionWithWaterDown(bulletMesh))
-        {
-            bulletVelocity.Vy = bulletVelocity.Vy * -0.2f;
-        }
-        if (CheckCollisionWithWaterUp(bulletMesh))
-        {
-            bulletVelocity.Vy = bulletVelocity.Vy * -0.2f;
-        }
 
+        
         // CHECKING COLLISION WITH THE FLOOR
         if (CheckForCollisionYDown(bulletMesh))
         {
@@ -60,8 +58,8 @@ public class Bullet : CheckCollision
         }
         else
         {
-            bulletVelocity.Vy = bulletVelocity0.Vy - gravity * Time.deltaTime;
-            by = by0 + bulletVelocity.Vy * Time.deltaTime * Mathf.Sin(bulletShootAngle) - (gravity / 2) * (Mathf.Pow(Time.deltaTime, 2));
+            bulletVelocity.Vy = bulletVelocity0.Vy - gravity * mass * Time.deltaTime;
+            bulletPosition.Y = bulletPosition0.Y + bulletVelocity.Vy * Time.deltaTime;
         }
         
 
@@ -85,23 +83,46 @@ public class Bullet : CheckCollision
         //CHECKING SIDE COLLISIONS
         if (CheckForCollisionXLeft(bulletMesh))
         {
-            bx = bx0 + 0.1f;
+            bulletPosition.X = bulletPosition0.X + 0.1f;
             bulletVelocity.Vx = -bulletVelocity.Vx * 0.5f;
         }
         if (CheckForCollisionXRight(bulletMesh))
         {
-            bx = bx0 - 0.1f;
+            bulletPosition.X = bulletPosition0.X - 0.1f;
             bulletVelocity.Vx = -bulletVelocity.Vx * 0.5f;
         }
         if (!CheckForCollisionXLeft(bulletMesh) && !CheckForCollisionXRight(bulletMesh))
         {
-            bx = bx0 + bulletVelocity0.Vx * Time.deltaTime * Mathf.Cos(bulletShootAngle);
+            bulletPosition.X = bulletPosition0.X + bulletVelocity0.Vx * Time.deltaTime;
+        }
+        
+        if (CheckForCollisionYUp(bulletMesh))
+        {
+            bulletPosition.Y = bulletPosition0.Y - 0.1f;
+            bulletVelocity.Vy = 0;
         }
 
-        transform.position = new Vector2(bx, by);
+        if (CheckCollisionWithWaterDown(bulletMesh))
+        {
+            wasInWater = true;
+            bulletVelocity.Vy += 0.2f;
 
-        bx0 = bx;
-        by0 = by;
+        }
+
+        if (CheckCollisionWithWaterUp(bulletMesh) && wasInWater)
+        {
+            bulletVelocity.Vy = bulletVelocity.Vy * 0.6f;
+            if (bulletVelocity.Vy < 0.5f)
+            {
+                bulletVelocity.Vy = 0;
+            }
+            wasInWater = false;
+        }
+
+
+        transform.position = new Vector2(bulletPosition.X, bulletPosition.Y);
+
+        bulletPosition0 = bulletPosition;
         bulletVelocity0.Vx = bulletVelocity.Vx;
         bulletVelocity0.Vy = bulletVelocity.Vy;
 

@@ -7,6 +7,7 @@ public class Velocity
     public float Vx;
     public float Vy;
     public float Vz;
+
     public Velocity(float Vx, float Vy)
     {
         this.Vx = Vx;
