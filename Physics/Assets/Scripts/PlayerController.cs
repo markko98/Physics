@@ -112,7 +112,6 @@ public class PlayerController : CheckCollision
         // CHECKING COLLISION WITH CEILING
         if (CheckForCollisionYUp(player))
         {
-            position.Y = position0.Y - 0.1f;
             velocity.Vy = velocity.Vy * (-0.25f);
         }
 
@@ -120,14 +119,12 @@ public class PlayerController : CheckCollision
         //CHECKING SIDE COLLISIONS
         if (CheckForCollisionXLeft(player))
         {
-            position.X = position0.X + 0.1f;
             velocity.Vx = velocity.Vx * (-0.2f);
             canMoveLeft = false;
             canMoveRight = true;
         }
         if (CheckForCollisionXRight(player))
         {
-            position.X = position0.X - 0.1f;
             velocity.Vx = velocity.Vx * (-0.2f);
             canMoveRight = false;
             canMoveLeft = true;
@@ -184,23 +181,7 @@ public class PlayerController : CheckCollision
         // BUOYANCY
         if (CheckCollisionWithWaterDown(player))
         {
-            //if (Fg > Fb)
-            //{
-            //    velocity.Vy -= Fg - Fb;
-            //}
-            //if (Fb > Fg)
-            //{
-            //    velocity.Vy += Fb - Fg;
-            //}
-            //if(Fg == Fb)
-            //{
-            //    velocity.Vy = 0;
-            //}
             velocity.Vy += buoyancyModifier;
-            
-            // velocity.Vy += buoyancyModifier;
-            //velocity.Vy = velocity.Vy * -1 * density/1000;
-            //velocity.Vx = velocity.Vx * -1 * density / 1000;
 
         }
 

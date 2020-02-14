@@ -23,6 +23,8 @@ public class CheckCollision : MonoBehaviour
                 && (objectToCheckCollisionsWith.transform.position.x >= collidedObjects[i].transform.position.x - collidedObjects[i].GetComponent<MeshGenerator>().width)
                 && (objectToCheckCollisionsWith.transform.position.x <= collidedObjects[i].transform.position.x + collidedObjects[i].GetComponent<MeshGenerator>().width))
             {
+                objectToCheckCollisionsWith.transform.position =new Vector2(transform.position.x, collidedObjects[i].transform.position.y + collidedObjects[i].transform.GetComponent<MeshGenerator>().height + objectToCheckCollisionsWith.height + 0.02f);
+
                 wasInWater = false;
                 return true;
             }
@@ -39,7 +41,7 @@ public class CheckCollision : MonoBehaviour
                 && (objectToCheckCollisionsWith.transform.position.x >= collidedObjects[i].transform.position.x - collidedObjects[i].GetComponent<MeshGenerator>().width)
                 && (objectToCheckCollisionsWith.transform.position.x <= collidedObjects[i].transform.position.x + collidedObjects[i].GetComponent<MeshGenerator>().width))
             {
-                
+                objectToCheckCollisionsWith.transform.position = new Vector2(transform.position.x, collidedObjects[i].transform.position.y - collidedObjects[i].transform.GetComponent<MeshGenerator>().height - objectToCheckCollisionsWith.height - 0.02f);
                 return true;
             }
         }
@@ -55,7 +57,10 @@ public class CheckCollision : MonoBehaviour
                 && (objectToCheckCollisionsWith.transform.position.y >= collidedObjects[i].transform.position.y - collidedObjects[i].GetComponent<MeshGenerator>().height)
                 && (objectToCheckCollisionsWith.transform.position.y <= collidedObjects[i].transform.position.y + collidedObjects[i].GetComponent<MeshGenerator>().height))
             {
-                return true;
+                objectToCheckCollisionsWith.transform.position = new Vector2(
+                    collidedObjects[i].transform.position.x - collidedObjects[i].transform.GetComponent<MeshGenerator>().width - objectToCheckCollisionsWith.width - 0.02f,
+                    transform.position.y);
+                return true;f
             }
         }
         return false;
@@ -69,6 +74,7 @@ public class CheckCollision : MonoBehaviour
                 && (objectToCheckCollisionsWith.transform.position.y >= collidedObjects[i].transform.position.y - collidedObjects[i].GetComponent<MeshGenerator>().height)
                 && (objectToCheckCollisionsWith.transform.position.y <= collidedObjects[i].transform.position.y + collidedObjects[i].GetComponent<MeshGenerator>().height))
             {
+                objectToCheckCollisionsWith.transform.position = new Vector2(collidedObjects[i].transform.position.x + collidedObjects[i].transform.GetComponent<MeshGenerator>().width + objectToCheckCollisionsWith.width + 0.02f, transform.position.y);
                 return true;
             }
         }
