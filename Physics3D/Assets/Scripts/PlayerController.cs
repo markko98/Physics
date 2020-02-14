@@ -115,20 +115,20 @@ public class PlayerController : CheckCollision
         if (CheckForCollisionZTop(player))
         {
             velocity.Vz = 0;
-            canMoveUp = false;
-        }
-        else
-        {
-            canMoveUp = true;
-        }
-        if (CheckForCollisionZDown(player))
-        {
-            velocity.Vz = 0;
             canMoveDown = false;
         }
         else
         {
             canMoveDown = true;
+        }
+        if (CheckForCollisionZDown(player))
+        {
+            velocity.Vz = 0;
+            canMoveUp = false;
+        }
+        else
+        {
+            canMoveUp = true;
         }
 
 
