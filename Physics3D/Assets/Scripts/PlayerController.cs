@@ -112,18 +112,20 @@ public class PlayerController : CheckCollision
         {
             canMoveRight = true;
         }
-        if (CheckForCollisionZTop(player))
+        if (CheckForCollisionZDown(player))
         {
             velocity.Vz = 0;
+            player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z + 0.05f);
             canMoveDown = false;
         }
         else
         {
             canMoveDown = true;
         }
-        if (CheckForCollisionZDown(player))
+        if (CheckForCollisionZTop(player))
         {
             velocity.Vz = 0;
+            player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z - 0.05f);
             canMoveUp = false;
         }
         else
@@ -141,11 +143,21 @@ public class PlayerController : CheckCollision
 
         }
 
+
         if (isJump)
         {
             position.Y = position0.Y + velocity.Vy * Time.deltaTime - gravity / 2 * Mathf.Pow(Time.deltaTime, 2);
         }
 
+
+        // SHOOTING
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (onFire != null)
+            {
+                onFire();
+            }
+        }
         // GROUND FRICTION
         if (isGrounded)
         {

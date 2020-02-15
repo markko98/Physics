@@ -11,14 +11,14 @@ public class BulletShooting : MonoBehaviour
     private void Start()
     {
         playerController = GetComponent<PlayerController>();
-        //playerController.onFire += Fire;
+        playerController.onFire += Fire;
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Instantiate(bulletGo, transform.position, Quaternion.identity);
-        }
+        //if (Input.GetKeyDown(KeyCode.E))
+        //{
+        //    Instantiate(bulletGo, transform.position, Quaternion.identity);
+        //}
     }
     private void Fire()
     {

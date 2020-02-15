@@ -18,7 +18,7 @@ public class Bullet : CheckCollision
     private void Awake()
     {
         mass = 1;
-        //collidedObjects = GameObject.FindGameObjectsWithTag("Obstacle");
+        collidedObjects = GameObject.FindGameObjectsWithTag("Obstacle");
         //waters = GameObject.FindGameObjectsWithTag("Water");
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     }
@@ -46,15 +46,83 @@ public class Bullet : CheckCollision
 
     private void Update()
     {
+        if (CheckForCollisionYDown(gameObject))
+        {
+            isGrounded = true;
+            bulletVelocity.Vy = 0;
+        }
+        else
+        {
+            bulletVelocity.Vy = bulletVelocity0.Vy - gravity * mass * Time.deltaTime;
+            position.Y = position0.Y + bulletVelocity.Vy * Time.deltaTime;
+        }
+        if (CheckForCollisionXLeft(gameObject))
+        {
+            bulletVelocity.Vx = 0;
+        }
+        if (CheckForCollisionXRight(gameObject))
+        {
+            bulletVelocity.Vx = 0;
+        }
+        if (CheckForCollisionZDown(gameObject))
+        {
+            bulletVelocity.Vz = 0;
+            gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z + 0.05f);
+        }
+        if (CheckForCollisionZTop(gameObject))
+        {
+            bulletVelocity.Vz = 0;
+            gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z - 0.05f);
+        }
+
+        
+
+
         position.X = position0.X + bulletVelocity0.Vx * Time.deltaTime;
 
-        bulletVelocity.Vy = bulletVelocity0.Vy - gravity * mass * Time.deltaTime;
-        position.Y = position0.Y + bulletVelocity.Vy * Time.deltaTime;
+        
 
         position.Z = position0.Z + bulletVelocity.Vz * Time.deltaTime;
 
 
         transform.position = new Vector3(position.X, position.Y, position.Z);
+        if (isGrounded)
+        {
+            if (bulletVelocity.Vx > 0.2)
+            {
+                bulletVelocity.Vx -= 0.2f;
+            }
+            if (bulletVelocity.Vx < -0.2)
+            {
+                bulletVelocity.Vx += 0.2f;
+            }
+            if (bulletVelocity.Vx >= -0.2 && bulletVelocity.Vx <= 0.2)
+            {
+                bulletVelocity.Vx = 0;
+            }
+            if (bulletVelocity.Vz > 0.2)
+            {
+                bulletVelocity.Vz -= 0.2f;
+            }
+            if (bulletVelocity.Vz < -0.2)
+            {
+                bulletVelocity.Vz += 0.2f;
+            }
+            if (bulletVelocity.Vz >= -0.2 && bulletVelocity.Vz <= 0.2)
+            {
+                bulletVelocity.Vz = 0;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
 
         // saving values
         position0 = position;
