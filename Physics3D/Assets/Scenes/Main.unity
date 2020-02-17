@@ -2179,11 +2179,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 136924999, guid: be718bed43fb69e489c96678f696ecad, type: 3}
       propertyPath: typeOfFluid
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 136924999, guid: be718bed43fb69e489c96678f696ecad, type: 3}
       propertyPath: typeOfObject
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6158094928956163489, guid: be718bed43fb69e489c96678f696ecad,
         type: 3}
@@ -2193,7 +2193,7 @@ PrefabInstance:
     - target: {fileID: 8308683226427395993, guid: be718bed43fb69e489c96678f696ecad,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.9
+      value: -30.24
       objectReference: {fileID: 0}
     - target: {fileID: 8308683226427395993, guid: be718bed43fb69e489c96678f696ecad,
         type: 3}
@@ -2248,17 +2248,17 @@ PrefabInstance:
     - target: {fileID: 8308683226427395993, guid: be718bed43fb69e489c96678f696ecad,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8308683226427395993, guid: be718bed43fb69e489c96678f696ecad,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8308683226427395993, guid: be718bed43fb69e489c96678f696ecad,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be718bed43fb69e489c96678f696ecad, type: 3}

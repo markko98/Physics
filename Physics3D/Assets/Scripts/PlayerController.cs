@@ -26,6 +26,7 @@ public class PlayerController : CheckCollision
     public TypeOfObject typeOfObject;
     float densityOfObject = 1000f;
     float densityOfFluid = 1000f;
+    bool canSwim = false;
     //[Range(0,5)]
     public float buoyancyForce;
     private float dragForce;
@@ -120,8 +121,9 @@ public class PlayerController : CheckCollision
             velocity.Vy = 0;
             isGrounded = true;
             isInWater = false;
+            canSwim = false;
         }
-        else
+        else if(!canSwim)
         {
             isGrounded = false;
 
@@ -195,7 +197,11 @@ public class PlayerController : CheckCollision
             Debug.Log("Fb: " + Fb);
             Debug.Log("Fg: " + Fg);
 
-            velocity.Vy = velocity0.Vy + Fg + Fb;
+            if(Mathf.Abs(Fb) > Mathf.Abs(Fg))
+            {
+                canSwim = true;
+            }
+            velocity.Vy = velocity0.Vy + Fb + Fg;
             
             //velocity.Vy = Fg + Fb;
 
@@ -203,7 +209,6 @@ public class PlayerController : CheckCollision
             {
                 velocity.Vy = 0f;
             }
-
         }
         
 
