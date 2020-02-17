@@ -5,6 +5,7 @@ using System;
 public class PlayerController : CheckCollision
 {
     public enum TypeOfFluid { Water, Propane, Mercury}
+    public enum TypeOfObject { Wood, Stone, Plastic }
     private const float gravity = 9.81f;
     private float mass;
     Position position, position0;
@@ -18,18 +19,16 @@ public class PlayerController : CheckCollision
     public Action onFire;
     private MeshGenerator water;
 
-    // FORCES
-    Vector2 Fg;
-    Vector2 Fb;
     
     // BUOYANCY
     public TypeOfFluid typeOfFluid;
-    float density = 1000f;
-    float liquidDisplaced;
+    public TypeOfObject typeOfObject;
+    float densityOfFluid = 1000f;
+    float densityOfObject = 1000f;
 
-    [Range(0,5)]
-    public float buoyancyModifier;
-
+    private float Fb;
+    private float Fg;
+    public float volumeOfObject;
     private void Start()
     {
 
@@ -40,27 +39,34 @@ public class PlayerController : CheckCollision
         position = position0;
         velocity0 = new Velocity(0, 0);
         velocity = velocity0;
-        // converting from liters to m3
-        liquidDisplaced = (player.width*player.height) / 1000;
 
         if(typeOfFluid == TypeOfFluid.Water)
         {
-            density = 1000f;
+            densityOfFluid = 0.1f;
         }
         if (typeOfFluid == TypeOfFluid.Propane)
         {
-            density = 493f;
+            densityOfFluid = 0.493f;
         }
         if (typeOfFluid == TypeOfFluid.Mercury)
         {
-            density = 13590f;
+            densityOfFluid = 0.3590f;
+        }
+        if (typeOfObject == TypeOfObject.Wood)
+        {
+            densityOfObject = 0.06f;
+        }
+        if (typeOfObject == TypeOfObject.Stone)
+        {
+            densityOfObject = 0.15f;
+        }
+        if (typeOfObject == TypeOfObject.Plastic)
+        {
+            densityOfObject = 0.05f;
         }
 
-        Fg.y = mass * gravity;
-        Fb.y = density * gravity * liquidDisplaced;
-
-        Debug.Log("Fg: " + Fg.y);
-        Debug.Log("Fb: " + Fb.y);
+        volumeOfObject = (player.width * player.height);
+        mass = volumeOfObject * densityOfObject;
     }
 
 
@@ -105,7 +111,7 @@ public class PlayerController : CheckCollision
         else
         {
             isGrounded = false;
-            velocity.Vy = velocity0.Vy - gravity * mass * Time.deltaTime;
+            velocity.Vy = velocity0.Vy - gravity * Time.deltaTime;
             position.Y = position0.Y + velocity0.Vy * Time.deltaTime - (gravity / 2) * (Mathf.Pow(Time.deltaTime, 2));
         }
 
@@ -179,21 +185,51 @@ public class PlayerController : CheckCollision
 
 
         // BUOYANCY
+
         if (CheckCollisionWithWaterDown(player))
         {
-            velocity.Vy += buoyancyModifier;
+            Fb = Vdisplaced * densityOfFluid * gravity;
+            Fg = mass * (-gravity);
+            //Fg = (1 - Vdisplaced) * densityOfObject * gravity;
 
-        }
-
-        if (CheckCollisionWithWaterUp(player) && wasInWater)
-        {
-            velocity.Vy = velocity.Vy * 0.6f;
-            if (velocity.Vy < 0.5f)
+            if (Mathf.Abs(Fb) > Mathf.Abs(Fg))
             {
-                velocity.Vy = 0;
+                velocity.Vy = velocity0.Vy + Fb-Fg;
             }
-            wasInWater = false;
+            if (Mathf.Abs(Fg) > Mathf.Abs(Fb))
+            {
+                velocity.Vy = velocity0.Vy + Fg-Fb;
+            }
         }
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        //if (CheckCollisionWithWaterDown(player))
+        //{
+        //    velocity.Vy += buoyancyModifier;
+
+        //}
+
+        //if (CheckCollisionWithWaterUp(player) && wasInWater)
+        //{
+        //    velocity.Vy = velocity.Vy * 0.6f;
+        //    if (velocity.Vy < 0.5f)
+        //    {
+        //        velocity.Vy = 0;
+        //    }
+        //    wasInWater = false;
+        //}
 
 
 

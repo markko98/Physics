@@ -1376,6 +1376,11 @@ PrefabInstance:
       propertyPath: buoyancyModifier
       value: 0.44
       objectReference: {fileID: 0}
+    - target: {fileID: 5131711975548910548, guid: 8f580e4f17a49304c9a28a0583274c75,
+        type: 3}
+      propertyPath: typeOfObject
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5131711975548910551, guid: 8f580e4f17a49304c9a28a0583274c75,
         type: 3}
       propertyPath: m_Name
