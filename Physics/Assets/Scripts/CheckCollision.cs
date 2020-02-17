@@ -60,7 +60,7 @@ public class CheckCollision : MonoBehaviour
                 objectToCheckCollisionsWith.transform.position = new Vector2(
                     collidedObjects[i].transform.position.x - collidedObjects[i].transform.GetComponent<MeshGenerator>().width - objectToCheckCollisionsWith.width - 0.02f,
                     transform.position.y);
-                return true;f
+                return true;
             }
         }
         return false;

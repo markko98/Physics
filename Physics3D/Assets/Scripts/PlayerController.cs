@@ -4,7 +4,8 @@ using System;
 
 public class PlayerController : CheckCollision
 {
-    public enum TypeOfFluid { Water, Propane, Mercury}
+    public enum TypeOfFluid { Water, FluidB, Mercury}
+    public enum TypeOfObject { Wood, Stone, Plastic }
     private const float gravity = 9.81f;
     public float mass;
     float speed = 50f;
@@ -17,16 +18,20 @@ public class PlayerController : CheckCollision
     private GameObject player;
 
     // FORCES
-    Vector2 Fg;
-    Vector2 Fb;
+    float Fg;
+    float Fb;
     
     // BUOYANCY
     public TypeOfFluid typeOfFluid;
-    float density = 1000f;
-    float liquidDisplaced;
-
-    [Range(0,5)]
-    public float buoyancyModifier;
+    public TypeOfObject typeOfObject;
+    float densityOfObject = 1000f;
+    float densityOfFluid = 1000f;
+    //[Range(0,5)]
+    public float buoyancyForce;
+    private float dragForce;
+    private float dragCoefficientcyOfCube = 0.8f;
+    private float a;
+    [HideInInspector] public float volumeOfObject;
 
     private void Start()
     {
@@ -35,6 +40,34 @@ public class PlayerController : CheckCollision
         position = position0;
         velocity0 = new Velocity(0, 0, 0);
         velocity = velocity0;
+        if (typeOfFluid == TypeOfFluid.Water)
+        {
+            densityOfFluid = 0.1f;
+        }
+        if (typeOfFluid == TypeOfFluid.Mercury)
+        {
+            densityOfFluid = 0.2f;
+        }
+        if (typeOfFluid == TypeOfFluid.FluidB)
+        {
+            densityOfFluid = 0.05f;
+        }
+        if(typeOfObject == TypeOfObject.Wood)
+        {
+            densityOfObject = 0.06f;
+        }
+        if (typeOfObject == TypeOfObject.Stone)
+        {
+            densityOfObject = 0.15f;
+        }
+        if (typeOfObject == TypeOfObject.Plastic)
+        {
+            densityOfObject = 0.05f;
+        }
+
+        volumeOfObject = transform.localScale.x * transform.localScale.y * transform.localScale.z;
+        mass = volumeOfObject * densityOfObject;
+        dragForce = (dragCoefficientcyOfCube * densityOfFluid * volumeOfObject * (10*10)) * 0.5f;
     }
 
 
@@ -81,22 +114,29 @@ public class PlayerController : CheckCollision
         position.Z = position0.Z + velocity0.Vz * Time.deltaTime;
         transform.position = new Vector3(position0.X, position0.Y, position0.Z);
 
-
+        //COLLISION
         if (CheckForCollisionYDown(player))
         {
             velocity.Vy = 0;
             isGrounded = true;
+            isInWater = false;
         }
         else
         {
             isGrounded = false;
-            velocity.Vy = velocity0.Vy - gravity * mass * Time.deltaTime;
+
+            velocity.Vy = velocity0.Vy - gravity * Time.deltaTime;
             position.Y = position0.Y + velocity0.Vy * Time.deltaTime - (gravity / 2) * (Mathf.Pow(Time.deltaTime, 2));
+        }
+        if (CheckForCollisionYUp(player))
+        {
+            velocity.Vy = 0;
         }
 
         if (CheckForCollisionXLeft(player))
         {
             velocity.Vx = 0;
+            player.transform.position = new Vector3(player.transform.position.x + 0.1f, player.transform.position.y, player.transform.position.z);
             canMoveLeft = false;
         }
         else
@@ -106,6 +146,7 @@ public class PlayerController : CheckCollision
         if (CheckForCollisionXRight(player))
         {
             velocity.Vx = 0;
+            player.transform.position = new Vector3(player.transform.position.x -0.1f, player.transform.position.y, player.transform.position.z);
             canMoveRight = false;
         }
         else
@@ -115,7 +156,7 @@ public class PlayerController : CheckCollision
         if (CheckForCollisionZDown(player))
         {
             velocity.Vz = 0;
-            player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z + 0.05f);
+            player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z + 0.1f);
             canMoveDown = false;
         }
         else
@@ -125,13 +166,47 @@ public class PlayerController : CheckCollision
         if (CheckForCollisionZTop(player))
         {
             velocity.Vz = 0;
-            player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z - 0.05f);
+            player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z - 0.1f);
             canMoveUp = false;
         }
         else
         {
             canMoveUp = true;
         }
+
+
+        //COLLISION WITH WATER
+        
+        if (CheckForCollisionYDownWater(player))
+        {
+            Fb = Vdisplaced * densityOfFluid * gravity;
+            Fg = mass * (-gravity);
+            
+            //akceleracija buoyancy force-a
+            //a = Fb / mass;
+
+            // Akceleracija tijela nakon sto na njega djeluje buoyancy force i viskoznost
+            //a = (1 / (mass)) * ((mass*gravity)-Fb-dragForce);
+        }
+       
+
+        if (isInWater)
+        {
+            Debug.Log("Fb: " + Fb);
+            Debug.Log("Fg: " + Fg);
+
+            velocity.Vy = velocity0.Vy + Fg + Fb;
+            
+            //velocity.Vy = Fg + Fb;
+
+            if (Mathf.Abs(Fg) == Mathf.Abs(Fb))
+            {
+                velocity.Vy = 0f;
+            }
+
+        }
+        
+
 
 
         // JUMPING
@@ -195,4 +270,6 @@ public class PlayerController : CheckCollision
         velocity0 = velocity;
 
     }
+
+    
 }

@@ -9,17 +9,17 @@ public class Bullet : CheckCollision
     PlayerController playerController;
     Position position, position0;
     Velocity bulletVelocity0, bulletVelocity;
-    float bulletShootAngle, bulletShootAngle2;
+    float bulletShootAngleX, bulletShootAngleY;
     bool isGrounded = false;
     [Range(0, 180)]
-    public float projectileShootAngle;
+    public float projectileShootAngleX;
     [Range(0, 180)]
-    public float projectileShootAngle2;
+    public float projectileShootAngleY;
     private void Awake()
     {
         mass = 1;
         collidedObjects = GameObject.FindGameObjectsWithTag("Obstacle");
-        //waters = GameObject.FindGameObjectsWithTag("Water");
+        waters = GameObject.FindGameObjectsWithTag("Water");
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     }
 
@@ -36,16 +36,17 @@ public class Bullet : CheckCollision
         bulletVelocity0.Vz = 15f;
 
         // ANGLE ON WHICH THE BULLET IS SHOOTED
-        bulletShootAngle = projectileShootAngle * Mathf.PI / 180;
-        bulletShootAngle2 = projectileShootAngle2 * Mathf.PI / 180;
+        bulletShootAngleX = projectileShootAngleX * Mathf.PI / 180;
+        bulletShootAngleY = projectileShootAngleY * Mathf.PI / 180;
 
-        bulletVelocity.Vx = bulletVelocity0.Vx * Mathf.Cos(bulletShootAngle) * Mathf.Cos(bulletShootAngle2);
-        bulletVelocity.Vy = bulletVelocity0.Vy * Mathf.Sin(bulletShootAngle);
-        bulletVelocity.Vz = bulletVelocity0.Vz * Mathf.Cos(bulletShootAngle) * Mathf.Sin(bulletShootAngle2);
+        bulletVelocity.Vx = bulletVelocity0.Vx * Mathf.Cos(bulletShootAngleX) * Mathf.Cos(bulletShootAngleY);
+        bulletVelocity.Vy = bulletVelocity0.Vy * Mathf.Sin(bulletShootAngleX);
+        bulletVelocity.Vz = bulletVelocity0.Vz * Mathf.Cos(bulletShootAngleX) * Mathf.Sin(bulletShootAngleY);
     }
 
     private void Update()
     {
+        //COLLISIONS
         if (CheckForCollisionYDown(gameObject))
         {
             isGrounded = true;
@@ -55,6 +56,10 @@ public class Bullet : CheckCollision
         {
             bulletVelocity.Vy = bulletVelocity0.Vy - gravity * mass * Time.deltaTime;
             position.Y = position0.Y + bulletVelocity.Vy * Time.deltaTime;
+        }
+        if (CheckForCollisionYUp(gameObject))
+        {
+            bulletVelocity.Vy = 0;
         }
         if (CheckForCollisionXLeft(gameObject))
         {
@@ -80,12 +85,11 @@ public class Bullet : CheckCollision
 
         position.X = position0.X + bulletVelocity0.Vx * Time.deltaTime;
 
-        
-
         position.Z = position0.Z + bulletVelocity.Vz * Time.deltaTime;
 
-
         transform.position = new Vector3(position.X, position.Y, position.Z);
+
+        //FRICTION
         if (isGrounded)
         {
             if (bulletVelocity.Vx > 0.2)
@@ -113,15 +117,6 @@ public class Bullet : CheckCollision
                 bulletVelocity.Vz = 0;
             }
         }
-
-
-
-
-
-
-
-
-
 
 
         // saving values

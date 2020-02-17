@@ -109,5 +109,5 @@ MonoBehaviour:
   collidedObjects: []
   waters: []
   wasInWater: 0
-  projectileShootAngle: 32.9
-  projectileShootAngle2: 88.5
+  projectileShootAngleX: 15.1
+  projectileShootAngleY: 91.1
