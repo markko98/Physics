@@ -47,9 +47,6 @@ public class Bullet : CheckCollision
 
     private void Update()
     {
-
-
-        
         // CHECKING COLLISION WITH THE FLOOR
         if (CheckForCollisionYDown(bulletMesh))
         {
@@ -118,7 +115,10 @@ public class Bullet : CheckCollision
             }
             wasInWater = false;
         }
-
+        if (CheckCollisionWithWaterUp(bulletMesh))
+        {
+            bulletVelocity.Vy *= 0.6f;
+        }
 
         transform.position = new Vector2(bulletPosition.X, bulletPosition.Y);
 

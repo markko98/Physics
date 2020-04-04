@@ -119,4 +119,5 @@ MonoBehaviour:
   - {fileID: 0}
   waters: []
   wasInWater: 0
-  projectileShootAngle: 101.6
+  Vdisplaced: 0
+  projectileShootAngle: 180

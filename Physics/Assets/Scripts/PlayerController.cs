@@ -40,30 +40,37 @@ public class PlayerController : CheckCollision
         velocity0 = new Velocity(0, 0);
         velocity = velocity0;
 
-        if(typeOfFluid == TypeOfFluid.Water)
+        switch (typeOfFluid)
         {
-            densityOfFluid = 0.1f;
+            case TypeOfFluid.Water:
+                densityOfFluid = 0.1f;
+                break;
+            case TypeOfFluid.Mercury:
+                densityOfFluid = 0.3590f;
+                break;
+            case TypeOfFluid.Propane:
+                densityOfFluid = 0.493f;
+                break;
+            default:
+                densityOfFluid = 0.1f;
+                break;
         }
-        if (typeOfFluid == TypeOfFluid.Propane)
+        switch (typeOfObject)
         {
-            densityOfFluid = 0.493f;
+            case TypeOfObject.Plastic:
+                densityOfObject = 0.05f;
+                break;
+            case TypeOfObject.Stone:
+                densityOfObject = 0.15f;
+                break;
+            case TypeOfObject.Wood:
+                densityOfObject = 0.06f;
+                break;
+            default:
+                densityOfObject = 0.06f;
+                break;
         }
-        if (typeOfFluid == TypeOfFluid.Mercury)
-        {
-            densityOfFluid = 0.3590f;
-        }
-        if (typeOfObject == TypeOfObject.Wood)
-        {
-            densityOfObject = 0.06f;
-        }
-        if (typeOfObject == TypeOfObject.Stone)
-        {
-            densityOfObject = 0.15f;
-        }
-        if (typeOfObject == TypeOfObject.Plastic)
-        {
-            densityOfObject = 0.05f;
-        }
+
 
         volumeOfObject = (player.width * player.height);
         mass = volumeOfObject * densityOfObject;
@@ -202,39 +209,12 @@ public class PlayerController : CheckCollision
             }
         }
 
+        if (CheckCollisionWithWaterUp(player))
+        {
+            velocity.Vy *= 0.6f;
+        }
+
         
-
-
-
-
-
-
-
-
-
-
-
-
-        //if (CheckCollisionWithWaterDown(player))
-        //{
-        //    velocity.Vy += buoyancyModifier;
-
-        //}
-
-        //if (CheckCollisionWithWaterUp(player) && wasInWater)
-        //{
-        //    velocity.Vy = velocity.Vy * 0.6f;
-        //    if (velocity.Vy < 0.5f)
-        //    {
-        //        velocity.Vy = 0;
-        //    }
-        //    wasInWater = false;
-        //}
-
-
-
-
-
         // SAVING VALUES
         position0 = position;
         velocity0 = velocity;
